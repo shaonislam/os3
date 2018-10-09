@@ -16,9 +16,21 @@
 
 
 
+void handle_terminate(int sig)
+{
+        fprintf(stderr, "Terminating due to 2 second program life span is over.\n");
+        exit(1);
+}
+
 
 int main (int argc, char *argv[])
 {
+
+	/*______Set up signal______*/
+        signal(SIGALRM, handle_terminate);
+	alarm(2);
+
+
 
 	int option, max_spawn, term_time;  
 
