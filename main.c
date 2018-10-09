@@ -1,4 +1,5 @@
-/* Main.c 
+/*
+ Main.c 
 
 */
 
@@ -48,8 +49,34 @@ int main (int argc, char *argv[])
 	if (max_spawn == 0)
 	{	
 		max_spawn = 5;
-		printf("Max user processes spawned: %d\n\n", max_spawn);
+		fprintf(stderr, "Max user processes spawned: %d\n\n", max_spawn);
 	}
+
+
+	int child;
+
+	for(child = 0; child < max_spawn; child++)
+	{
+		fprintf(stderr, "\n\nTRYING to create child %d\n", (child+1));
+		
+        	pid_t child_pid = 0;
+        	child_pid = fork();
+        	if (child_pid == 0)
+        	{
+	        	/* in the child process! */
+        		fprintf(stderr, "i:%d 	process ID:%ld 	parent ID:%ld 	child ID:%ld\n", child, (long)getpid(), (long)getppid(), (long)child_pid);
+			exit(0);
+        	}
+		wait(NULL);
+
+	}
+
+
+
+
+
+
+
 
 	return 0;
 }
