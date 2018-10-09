@@ -53,12 +53,40 @@ int main (int argc, char *argv[])
 	}
 
 
+
+	/*_________Setup Shared Memory_________*/
+
+	int shm_id;
+        key_t key;
+        void* shm;
+        key = 6789;
+        shm_id = shmget(key, sizeof(int)*2, IPC_CREAT | 0666);
+        if (shm_id == -1)
+        {
+                perror("shmget");
+                exit(1);
+        }
+        shm = shmat(shm_id, NULL, 0);
+
+
+
+	/*_________PUT THE CLOCK IN SHARED MEMORY_________ */
+
+        int*  master_clock = shm;  
+	int seconds = 0;
+	int nanosec = 0;
+	master_clock[0] = seconds;
+	master_clock[1] = nanosec;
+
+
+
+
+
+
 	char arg1[10];
 	snprintf(arg1 , 10, "%d", max_spawn);
 
-
 	int child;
-
 	for(child = 0; child < max_spawn; child++)
 	{
 		fprintf(stderr, "\n\nTRYING to create child %d\n", (child+1));
@@ -75,18 +103,6 @@ int main (int argc, char *argv[])
 		wait(NULL);
 
 	}
-
-
-
-
-
-
-
-
-
-
-
-
 
 	return 0;
 }
