@@ -1,0 +1,9 @@
+Executable: oss
+
+OS Simulator:
+
+-fork a number of kids, then fork more kids as some terminate
+-system clock incremented by the ONE master process.
+-
+
+
