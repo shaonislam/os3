@@ -102,6 +102,12 @@ int main (int argc, char *argv[])
         	}
 		wait(NULL);
 
+
+		/* TESTING CHANGE IN MASTER CLOCK */
+		master_clock[0] = master_clock[0] + 100;
+                master_clock[1]	= master_clock[1] + 100;
+
+
 	}
 
 	return 0;
