@@ -53,6 +53,10 @@ int main (int argc, char *argv[])
 	}
 
 
+	char arg1[10];
+	snprintf(arg1 , 10, "%d", max_spawn);
+
+
 	int child;
 
 	for(child = 0; child < max_spawn; child++)
@@ -65,11 +69,17 @@ int main (int argc, char *argv[])
         	{
 	        	/* in the child process! */
         		fprintf(stderr, "i:%d 	process ID:%ld 	parent ID:%ld 	child ID:%ld\n", child, (long)getpid(), (long)getppid(), (long)child_pid);
-			exit(0);
+			execlp("./user", "./user", arg1, (char *)NULL);
+			exit(0); 
         	}
 		wait(NULL);
 
 	}
+
+
+
+
+
 
 
 
