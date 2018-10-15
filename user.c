@@ -47,9 +47,15 @@ int main (int argc, char *argv[])
 
 	/*_________Put Term_time in SHM _________*/
 	
-        int* term_time = shm_msg;
-        term_time[0] = 0; /*sec*/
-        term_time[1] = 0; /*nano*/
+	int* shterm_time = shm_msg;;
+	shterm_time[0] = 0;
+	shterm_time[1] = 0;	
+	shterm_time[2] = 0;
+	
+
+        int term_time[3] = {0,0,0}; /*sec,nano,process*/
+       /* term_time[0] = 0; 
+        term_time[1] = 0; */
 
 
         /*_________Setting Terminal Time _________*/
@@ -72,7 +78,12 @@ int main (int argc, char *argv[])
 		if(master_clock[0] > term_time[0] || (master_clock[0] == term_time[0] && master_clock[1] > term_time[1]) )
 		{
 			/* deadline passed, send shMsg and self terminate*/
+
 			fprintf(stderr, "DEADLINE MET: SEND shMSG\n");
+			shterm_time[0] = term_time[0];
+			shterm_time[1] = term_time[1];
+			shterm_time[2] = getpid();
+		
 		} 
 		else
 		{

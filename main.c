@@ -110,8 +110,8 @@ int main (int argc, char *argv[])
         key_msg = 1234;
         shmMSG_id = shmget(key_msg, sizeof(int)*2, IPC_CREAT | 0666);
         shm_msg = shmat(shmMSG_id, NULL, 0);
-	int* term_time = shm_msg;
-
+	int* shterm_time = shm_msg;
+	
 
 
 	/*_________Creating User Processes_______*/
@@ -133,29 +133,26 @@ int main (int argc, char *argv[])
         		child_pid = fork();
 			process_tracker += 1;
 
-
         		if (child_pid == 0)
         		{
-
 	        		/* in the child process! */
-				fprintf(stderr, "\n\n Child #%d created!!!! with pid: %ld\n", (child+1), (long)getpid());
-				term_time[0] = 0;
-        			term_time[1] = 0;
-        
+				fprintf(stderr, "\n\n Child #%d created!!!! with pid: %ld\n", (child+1), (long)getpid());        
 				execlp("./user", "./user", arg1, (char *)NULL);			
 				exit(0); 
         		}
 
-		
 
-			/* READING TERMINATING TIME CLOCK FROM USER */
-			fprintf(stderr, "TERM TIME:  Seconds: %d, Nanoseconds: %d\n", term_time[0], term_time[1]);	
+			/* READING TERMINATING TIME CLOCK FROM USER 
+			fprintf(stderr, "TERM TIME:  Seconds: %d, Nanoseconds: %d\n", term_time[0], term_time[1]); */	
 
 
 			/* ___Check shmMSG for Message____ */
-			if(shm_msg != 0)
+			if(shterm_time[0] != 0 || shterm_time[1] != 0)
 			{
-				fprintf(stderr, "term_time : %d:%d\n", term_time[0], term_time[1]);
+				/* Should have recieved a message */
+				fprintf(stderr, "Shterm_time : %d:%d for process %d\n", shterm_time[0], shterm_time[1], shterm_time[2]);
+				fprintf(stderr, "Clearing shterm_time now\n");
+				shterm_time[3] = 0;
 			}
 	
 			wait(NULL);
