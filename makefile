@@ -4,6 +4,7 @@ TARGET = oss
 TARGET1 = user
 OBJ = main.o 
 OBJ1 = user.o
+LIBS ?= -lpthread
 all: $(TARGET) $(TARGET1)
 
 oss: $(OBJ)
@@ -11,7 +12,7 @@ oss: $(OBJ)
 main.o : main.c
 	$(CC) $(CFLAGS) -c main.c
 user: $(OBJ1)
-	$(CC) $(CFLAGS) -o user $(OBJ1)
+	$(CC) $(CFLAGS) $(LIBS) -o user $(OBJ1)
 user.o : user.c
 	$(CC) $(CFLAGS) -c user.c
 clean:

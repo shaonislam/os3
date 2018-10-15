@@ -16,6 +16,7 @@
 #include <time.h>
 
 
+
 void handle_terminate(int sig)
 {
         fprintf(stderr, "Terminating due to 2 second program life span is over.\n");
@@ -115,35 +116,51 @@ int main (int argc, char *argv[])
 
 	/*_________Creating User Processes_______*/
 
+	int process_tracker = 0;
 	char arg1[10];
 	int child;
 
-	for(child = 0; child < max_spawn; child++)
-	{
-			       
-        	int random_duration = rand() % 1000000 + 1;
-		snprintf(arg1 , 10, "%d", random_duration);
 
-        	pid_t child_pid = 0;
-        	child_pid = fork();
-        	if (child_pid == 0)
-        	{
-	        	/* in the child process! */
-			fprintf(stderr, "\n\n Child #%d created!!!! with pid: %ld\n", (child+1), (long)getpid());
-			term_time[0] = 0;
-        		term_time[1] = 0;
-        		/*fprintf(stderr, "2 i:%d process ID:%ld 	parent ID:%ld\n", child, (long)getpid(), (long)getppid()); */
-			execlp("./user", "./user", arg1, (char *)NULL);			
-			exit(0); 
-        	}
+	while(process_tracker < 101)
+	{
+		for(child = 0; child < max_spawn; child++)
+		{
+			       
+        		int random_duration = rand() % 1000000 + 1;
+			snprintf(arg1 , 10, "%d", random_duration);
+
+        		pid_t child_pid = 0;
+        		child_pid = fork();
+			process_tracker += 1;
+
+
+        		if (child_pid == 0)
+        		{
+
+	        		/* in the child process! */
+				fprintf(stderr, "\n\n Child #%d created!!!! with pid: %ld\n", (child+1), (long)getpid());
+				term_time[0] = 0;
+        			term_time[1] = 0;
+        
+				execlp("./user", "./user", arg1, (char *)NULL);			
+				exit(0); 
+        		}
 
 		
 
-		/* READING TERMINATING TIME CLOCK FROM USER */
-		fprintf(stderr, "TERM TIME:  Seconds: %d, Nanoseconds: %d\n", term_time[0], term_time[1]);	
+			/* READING TERMINATING TIME CLOCK FROM USER */
+			fprintf(stderr, "TERM TIME:  Seconds: %d, Nanoseconds: %d\n", term_time[0], term_time[1]);	
 
-		wait(NULL);
 
+			/* ___Check shmMSG for Message____ */
+			if(shm_msg != 0)
+			{
+				fprintf(stderr, "term_time : %d:%d\n", term_time[0], term_time[1]);
+			}
+	
+			wait(NULL);
+
+		}
 	}
 
 
