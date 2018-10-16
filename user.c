@@ -10,9 +10,9 @@
 #include <fcntl.h>
 #include <errno.h>
 
+
 int main (int argc, char *argv[])
 {
-
 
 
 	/*_________See Master Clock_________*/
@@ -41,7 +41,7 @@ int main (int argc, char *argv[])
 	sem_t *sem; /*synch semaphore*/
 	sem = sem_open("thisSem", O_CREAT|O_EXCL, 0644, 10);
 	sem_unlink("thisSem");
-	fprintf(stderr, "*****semaphore initialized*******\n");
+/*	fprintf(stderr, "*****semaphore initialized*******\n"); */
 
 
 
@@ -51,51 +51,47 @@ int main (int argc, char *argv[])
 	shterm_time[0] = 0;
 	shterm_time[1] = 0;	
 	shterm_time[2] = 0;
-	
 
-        int term_time[3] = {0,0,0}; /*sec,nano,process*/
-       /* term_time[0] = 0; 
-        term_time[1] = 0; */
+        int term_time[2] = {0,0}; /*sec,nano,process*/
+
 
 
         /*_________Setting Terminal Time _________*/
 
 	int random_duration = atoi(argv[1]);
         term_time[1] = master_clock[1] + random_duration;
-	fprintf(stderr, "Master Clock + Random = Term Time: : %d + %d = %d\n", master_clock[1], random_duration, term_time[1]);
+
         while (term_time[1] > 999999999)
         {
                 term_time[1] = term_time[1] - 999999999;
                 term_time[0] = term_time[0] + 1;
         }
-	fprintf(stderr, "USER TERM TIME: %d:%d\n", term_time[0], term_time[1]);
+
 
 
 	/*_________Check System Clock Until Deadline _________*/
-	/*while(1)*/
 	
-		fprintf(stderr, "Current Master: %d:%d \nCurrent Term Time: %d:%d\n", master_clock[0], master_clock[1], term_time[0], term_time[1]); 
-		if(master_clock[0] > term_time[0] || (master_clock[0] == term_time[0] && master_clock[1] > term_time[1]) )
-		{
+/*	fprintf(stderr, "Current Master: %d:%d && Current Term Time: %d:%d, Process: %ld\n", master_clock[0], master_clock[1], term_time[0], term_time[1], (long)getpid()); */
+
+	/*______ENTERING CRITICAL SECTION_____*/
+
+	sem_wait(sem);
+
+	while (master_clock[0] < 2)
+	{
+		if((master_clock[0] > term_time[0]) || (master_clock[0] == term_time[0] && master_clock[1] > term_time[1]))
+		{ 
 			/* deadline passed, send shMsg and self terminate*/
 
-			fprintf(stderr, "DEADLINE MET: SEND shMSG\n");
+			fprintf(stderr, "READY TO END?!  Master: %d:%d && Current Term Time: %d:%d, Process: %ld\n", master_clock[0], master_clock[1], term_time[0], term_time[1], (long)getpid());
 			shterm_time[0] = term_time[0];
 			shterm_time[1] = term_time[1];
 			shterm_time[2] = getpid();
-		
-		} 
-		else
-		{
-			fprintf(stderr, "*deadline not met yet*\n");
+			sem_post(sem);
+			exit(0);
+			
 		}
-
-
-
-
-
-
-
+	}
 
 
 

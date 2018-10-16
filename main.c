@@ -32,13 +32,12 @@ int main (int argc, char *argv[])
 	alarm(2);
 
 
-
 	int option, max_spawn, master_term;  
-
-
 	srand((unsigned)time(NULL));
 	FILE *fname;   
 
+
+	/*______Set GETOPT______*/
         while((option = getopt(argc, argv, "hs:t:l:")) != -1)
         {
                 switch (option)
@@ -116,13 +115,26 @@ int main (int argc, char *argv[])
 
 	/*_________Creating User Processes_______*/
 
-	int process_tracker = 0;
+	/*int process_tracker = 0;*/
+	int live_processes = 0;
 	char arg1[10];
 	int child;
 
 
-	while(process_tracker < 101)
-	{
+
+	/*_________Increment System Clock_______*/
+
+        /* Increment System Clock BY 100 Million Nanoseconds */
+
+	while (master_clock[0] < 2) 
+        {	
+		master_clock[1] = master_clock[1] + 100000;
+        	if (master_clock[1] > 999999999)
+        	{
+        		master_clock[1] = master_clock[1] %  1000000000;
+                	master_clock[0] = master_clock[0] + 1;
+        	}
+
 		for(child = 0; child < max_spawn; child++)
 		{
 			       
@@ -131,17 +143,23 @@ int main (int argc, char *argv[])
 
         		pid_t child_pid = 0;
         		child_pid = fork();
-			process_tracker += 1;
+			/*process_tracker++;
+			live_processes++;*/
 
         		if (child_pid == 0)
         		{
-	        		/* in the child process! */
-				fprintf(stderr, "\n\n Child #%d created!!!! with pid: %ld\n", (child+1), (long)getpid());        
+				fprintf(stderr, "Child created!!!! with pid: %ld\n", (long)getpid());        
 				execlp("./user", "./user", arg1, (char *)NULL);			
-				exit(0); 
         		}
 
+			if (child_pid)
+			{
+				live_processes++;
+			}
 
+		}		
+
+	}
 			/* READING TERMINATING TIME CLOCK FROM USER 
 			fprintf(stderr, "TERM TIME:  Seconds: %d, Nanoseconds: %d\n", term_time[0], term_time[1]); */	
 
@@ -150,15 +168,24 @@ int main (int argc, char *argv[])
 			if(shterm_time[0] != 0 || shterm_time[1] != 0)
 			{
 				/* Should have recieved a message */
-				fprintf(stderr, "Shterm_time : %d:%d for process %d\n", shterm_time[0], shterm_time[1], shterm_time[2]);
-				fprintf(stderr, "Clearing shterm_time now\n");
-				shterm_time[3] = 0;
+				fprintf(stderr, "KILL: %d:%d for process %d\n", shterm_time[0], shterm_time[1], shterm_time[2]);
+
+				/* Wait for user to finish */
+				waitpid(shterm_time[2], NULL, 0);
+
+				/* Decrement Number of Live Processes */
+				live_processes--;	
+				
+				/*fprintf(stderr, "CLEAR shterm_time now\n");*/
+				shterm_time[0] = 0;
+				shterm_time[1] = 0;
+				shterm_time[2] = 0;
 			}
 	
-			wait(NULL);
-
-		}
-	}
+			/*wait(NULL); */
+		
+		
+	
 
 
 	/*______Clean Out Shared Memory_______*/
