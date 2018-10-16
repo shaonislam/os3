@@ -1,3 +1,10 @@
+/*
+USER.C
+ Shaon Islam
+ CS 4760: Project 1 Semaphores and OS Simulator
+ October 2018
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -41,19 +48,15 @@ int main (int argc, char *argv[])
 	sem_t *sem; /*synch semaphore*/
 	sem = sem_open("thisSem", O_CREAT|O_EXCL, 0644, 10);
 	sem_unlink("thisSem");
-/*	fprintf(stderr, "*****semaphore initialized*******\n"); */
-
 
 
 	/*_________Put Term_time in SHM _________*/
 	
-	int* shterm_time = shm_msg;;
-	shterm_time[0] = 0;
-	shterm_time[1] = 0;	
-	shterm_time[2] = 0;
-
-        int term_time[2] = {0,0}; /*sec,nano,process*/
-
+	int* shterm_time = shm_msg;
+	shterm_time[0] = 0; /* second */
+	shterm_time[1] = 0; /* nanosecond */	
+	shterm_time[2] = 0; /* process id to terminate */
+        int term_time[2] = {0,0};
 
 
         /*_________Setting Terminal Time _________*/
@@ -70,8 +73,6 @@ int main (int argc, char *argv[])
 
 
 	/*_________Check System Clock Until Deadline _________*/
-	
-/*	fprintf(stderr, "Current Master: %d:%d && Current Term Time: %d:%d, Process: %ld\n", master_clock[0], master_clock[1], term_time[0], term_time[1], (long)getpid()); */
 
 	/*______ENTERING CRITICAL SECTION_____*/
 
@@ -82,18 +83,13 @@ int main (int argc, char *argv[])
 		if((master_clock[0] > term_time[0]) || (master_clock[0] == term_time[0] && master_clock[1] > term_time[1]))
 		{ 
 			/* deadline passed, send shMsg and self terminate*/
-
-			fprintf(stderr, "READY TO END?!  Master: %d:%d && Current Term Time: %d:%d, Process: %ld\n", master_clock[0], master_clock[1], term_time[0], term_time[1], (long)getpid());
 			shterm_time[0] = term_time[0];
 			shterm_time[1] = term_time[1];
 			shterm_time[2] = getpid();
 			sem_post(sem);
 			exit(0);
-			
 		}
 	}
-
-
 
 	sem_destroy(sem);	
 	return 0;

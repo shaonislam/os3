@@ -124,19 +124,15 @@ int main (int argc, char *argv[])
 
 	/*_________Creating User Processes_______*/
 
-	/*int process_tracker = 0;*/
 	int live_processes = 0;
 	char arg1[10];
 	int child;
 
 
-
-	/*_________Increment System Clock_______*/
-
-        /* Increment System Clock BY 100 Million Nanoseconds */
-
 	while (master_clock[0] < 2) 
         {	
+		/*_________Increment System Clock_______*/
+		/* Increment System Clock BY 100000 Nanoseconds */
 		master_clock[1] = master_clock[1] + 100000;
         	if (master_clock[1] > 999999999)
         	{
@@ -146,7 +142,8 @@ int main (int argc, char *argv[])
 
 		for(child = 0; child < max_spawn; child++)
 		{			       
-        		int random_duration = rand() % 1000000 + 1;
+			/* Setting random number to send to user for its terminating time */
+			int random_duration = rand() % 1000000 + 1;
 			snprintf(arg1 , 10, "%d", random_duration);
 
         		pid_t child_pid = 0;
@@ -154,7 +151,6 @@ int main (int argc, char *argv[])
 
         		if (child_pid == 0)
         		{
-				fprintf(stderr, "Child created!!!! with pid: %ld\n", (long)getpid());        
 				execlp("./user", "./user", arg1, (char *)NULL);			
         		}
 
@@ -169,23 +165,16 @@ int main (int argc, char *argv[])
 		/* ___Check shmMSG for Message____ */
 		if(shterm_time[0] != 0 || shterm_time[1] != 0)
 		{
-			/* Should have recieved a message */
-			fprintf(stderr, "KILL: %d:%d for process %d\n", shterm_time[0], shterm_time[1], shterm_time[2]);
-
+			/* Recieved a message */
 			fprintf(fname, "OSS: Child %d is terminating at my time %d seconds, %d nanoseconds because it reached %d seconds, %d nanoseconds in user\n", shterm_time[2], master_clock[0], master_clock[1], shterm_time[0], shterm_time[1]);
 			/* Wait for user to finish */
 			waitpid(shterm_time[2], NULL, 0);
-
 			/* Decrement Number of Live Processes */
 			live_processes--;	
-				
-			/*fprintf(stderr, "CLEAR shterm_time now\n");*/
 			shterm_time[0] = 0;
 			shterm_time[1] = 0;
 			shterm_time[2] = 0;
 		}
-	
-			/*wait(NULL); */
 		
 	}	
 	
