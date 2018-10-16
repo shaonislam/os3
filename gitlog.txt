@@ -1,0 +1,71 @@
+commit 1284404217e72d7883d73888754840ef3f3d2e4d
+Author: Shaon Islam <sidw8@mail.umsl.edu>
+Date:   Mon Oct 15 23:40:44 2018 -0500
+
+    final
+
+commit 2e00a442e932dbf46e12e992fe897334167750dc
+Author: Shaon Islam <sidw8@mail.umsl.edu>
+Date:   Mon Oct 15 23:20:44 2018 -0500
+
+    Almost done
+
+commit 95427682a89d9cb5fb2ba72b58c1a68a042c204f
+Author: Shaon Islam <sidw8@mail.umsl.edu>
+Date:   Mon Oct 15 21:02:34 2018 -0500
+
+    Semaphores working
+
+commit a036d93f9183ab1fd342900edefac7aa593b5c43
+Author: Shaon Islam <sidw8@mail.umsl.edu>
+Date:   Mon Oct 15 15:24:14 2018 -0500
+
+    fixed shMSG
+
+commit 521142d5ae04618bbc73be2ee573f8c676829a61
+Author: Shaon Islam <sidw8@mail.umsl.edu>
+Date:   Mon Oct 15 13:02:27 2018 -0500
+
+    Semaphores work but NEEDS MORE TESTINT
+
+commit e04b524f2f63ea8cdd5f39602e8c7c0ebd89ebf2
+Author: Shaon Islam <sidw8@mail.umsl.edu>
+Date:   Sun Oct 14 20:55:03 2018 -0500
+
+    pre-clean up
+
+commit bfb7a9288dc9daa62dda73d57d9f1374311ff5db
+Author: Shaon Islam <sidw8@mail.umsl.edu>
+Date:   Tue Oct 9 18:20:06 2018 -0500
+
+    Signal works for timer of 2 seconds
+
+commit 4c6963ab77ccd94986df384ab17cbba5b8622686
+Author: Shaon Islam <sidw8@mail.umsl.edu>
+Date:   Tue Oct 9 18:16:04 2018 -0500
+
+    Master is incrememnting clock, children can see observe
+
+commit 43e8502e11d4afc10f9b4fafe816d49cc2532505
+Author: Shaon Islam <sidw8@mail.umsl.edu>
+Date:   Tue Oct 9 18:07:47 2018 -0500
+
+    Shared memory and master clock should be set
+
+commit fc43b7583012473eaa05b579ec6fe03336293b1c
+Author: Shaon Islam <sidw8@mail.umsl.edu>
+Date:   Tue Oct 9 17:59:51 2018 -0500
+
+    User Exec working for each child
+
+commit 39f0dfc5e69b7982626a8f1636046257a4d5927f
+Author: Shaon Islam <sidw8@mail.umsl.edu>
+Date:   Tue Oct 9 17:44:56 2018 -0500
+
+    Creating x number of child processes correctly
+
+commit 2d40a4394de4d9e35f08059e4ff56ba9b092e69a
+Author: Shaon Islam <sidw8@mail.umsl.edu>
+Date:   Tue Oct 9 01:04:30 2018 -0500
+
+    Initial commit

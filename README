@@ -1,9 +1,51 @@
-Executable: oss
+_______How to use:
 
 OS Simulator:
 
--fork a number of kids, then fork more kids as some terminate
--system clock incremented by the ONE master process.
--
+	- make: to create executables from makefile
+	- oss: executable
+	- oss -s x -t y -l z
+		x value is number of users spawned (optional: default is 5)
+		y value is terminating number (optional: terminates any way at 2 seconds)
+		z is a filename to be written to. (mandatory: needs a file to write to)
 
 
+
+_______Overview of Implentation:
+
+MAIN.C
+    - [ ] System Clock: 0:00 (SHM)
+    - [ ] Fork/exec User Processes
+        - [ ] Enter a  loop until system clock reaches 2 seconds 
+                - [ ] Increment the System Clock
+                - [ ] Check shmMSG
+                        - [ ] If there’s message in shmMSG: 
+                                - [ ] means child is terminating
+                                - [ ]  output content of message to a file.
+                                - [ ] oss should wait() for child to end
+                                - [ ] clear shmMSG
+                                - [ ] Fork/exec another child.
+        - [ ] Master terminate all children then itself. 
+
+
+
+USER.C 
+    - [ ] Read System Clock -oss
+    - [ ] Generate Random Number (1-1000000)
+    - [ ] Get termination deadline
+    - [ ] Enter Loop over continually critical section of code with semaphores
+            - [ ] Check System Clock and see if deadlines passes
+            - [ ] if deadline passed
+                    - [ ] send message to oss to say it’s ready to terminate
+                    - [ ] once message sent, it should terminate itself, cede to critical section
+
+
+_______Notes:
+	This project was hard, really hard especially because I wasn't exactly sure how to test and figure out if it's working properly.
+	Considering there are a lot of moving parts - multiple processes going on at the same time - print statements only went so far
+	because things were starting to become out of order. 
+	Implenting master_clock was fine, shmMSG was fine, semaphores were okay -but if tests were provided it would have been a lot more
+	reassuring. Biggest issue was communicating between the shared memory and seeing if all processes were getting done.
+	Tried to put in a default file name -unfortunatly couldn't figure it out in time due to when the termination time is up the file needs to be
+	closed in order for it to be written properly.
+	Keeping track of processes may be off.
