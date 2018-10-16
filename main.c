@@ -1,6 +1,8 @@
 /*
  Main.c 
-
+ Shaon Islam
+ CS 4760: Project 3 Semaphores and OS Simulator
+ October 2018
 */
 
 
@@ -27,15 +29,15 @@ void handle_terminate(int sig)
 int main (int argc, char *argv[])
 {
 
-	/*______Set up signal______*/
-        signal(SIGALRM, handle_terminate);
-	alarm(2);
-
-
 	int option, max_spawn, master_term;  
 	srand((unsigned)time(NULL));
-	FILE *fname;   
+	int lflag = 0;
+	FILE *fname;
 
+	/*______Set up signal______*/
+        signal(SIGALRM, handle_terminate);
+        alarm(2);
+ 
 
 	/*______Set GETOPT______*/
         while((option = getopt(argc, argv, "hs:t:l:")) != -1)
@@ -59,7 +61,7 @@ int main (int argc, char *argv[])
 	                       	break;
 			case 'l':
 				fname = fopen(optarg, "w+");
-				fprintf(stderr,"Logfile Name: %s\n", optarg);
+				lflag = 1;		
 				break;
                         case '?':
                                 fprintf(stderr, "Error\n");
@@ -68,13 +70,20 @@ int main (int argc, char *argv[])
         
 	}
 
+
+	/* If spawn input isn't given, default to 5 */
 	if (max_spawn == 0)
 	{	
 		max_spawn = 5;
 		fprintf(stderr, "Max user processes spawned: %d\n\n", max_spawn);
 	}
-
-
+	
+	/* Check for ile name */
+	if (lflag == 0)
+	{
+		fprintf(stderr, "No filename inputted: Exiting Program\n");
+		exit(1);
+	}
 
 	/*_________Setup Shared Memory For Master Clock_________*/
 
@@ -136,15 +145,12 @@ int main (int argc, char *argv[])
         	}
 
 		for(child = 0; child < max_spawn; child++)
-		{
-			       
+		{			       
         		int random_duration = rand() % 1000000 + 1;
 			snprintf(arg1 , 10, "%d", random_duration);
 
         		pid_t child_pid = 0;
         		child_pid = fork();
-			/*process_tracker++;
-			live_processes++;*/
 
         		if (child_pid == 0)
         		{
@@ -159,32 +165,29 @@ int main (int argc, char *argv[])
 
 		}		
 
-	}
-			/* READING TERMINATING TIME CLOCK FROM USER 
-			fprintf(stderr, "TERM TIME:  Seconds: %d, Nanoseconds: %d\n", term_time[0], term_time[1]); */	
+	
+		/* ___Check shmMSG for Message____ */
+		if(shterm_time[0] != 0 || shterm_time[1] != 0)
+		{
+			/* Should have recieved a message */
+			fprintf(stderr, "KILL: %d:%d for process %d\n", shterm_time[0], shterm_time[1], shterm_time[2]);
 
+			fprintf(fname, "OSS: Child %d is terminating at my time %d seconds, %d nanoseconds because it reached %d seconds, %d nanoseconds in user\n", shterm_time[2], master_clock[0], master_clock[1], shterm_time[0], shterm_time[1]);
+			/* Wait for user to finish */
+			waitpid(shterm_time[2], NULL, 0);
 
-			/* ___Check shmMSG for Message____ */
-			if(shterm_time[0] != 0 || shterm_time[1] != 0)
-			{
-				/* Should have recieved a message */
-				fprintf(stderr, "KILL: %d:%d for process %d\n", shterm_time[0], shterm_time[1], shterm_time[2]);
-
-				/* Wait for user to finish */
-				waitpid(shterm_time[2], NULL, 0);
-
-				/* Decrement Number of Live Processes */
-				live_processes--;	
+			/* Decrement Number of Live Processes */
+			live_processes--;	
 				
-				/*fprintf(stderr, "CLEAR shterm_time now\n");*/
-				shterm_time[0] = 0;
-				shterm_time[1] = 0;
-				shterm_time[2] = 0;
-			}
+			/*fprintf(stderr, "CLEAR shterm_time now\n");*/
+			shterm_time[0] = 0;
+			shterm_time[1] = 0;
+			shterm_time[2] = 0;
+		}
 	
 			/*wait(NULL); */
 		
-		
+	}	
 	
 
 
